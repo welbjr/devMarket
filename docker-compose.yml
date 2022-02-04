@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  client:
+    build:
+      context: ./client
+    depends_on:
+      - server
+    restart: always
+    volumes:
+      - ./client:/app
+    environment:
+      SERVER_URL: ${SERVER_URL}
+    ports:
+      - 3000:3000
+  server:
+    restart: always
+    build:
+      context: ./server
+    volumes:
+      - ./server:/app
+    depends_on:
+      - db
+    environment:
+      MONGO_URL: ${MONGO_URL}
+      SERVER_URL: ${SERVER_URL}
+    ports:
+      - 5000:5000
+  db:
+    image: mongo
+    hostname: mongodb
+    restart: always
+    volumes:
+      - ./data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: dev_market_db
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - 27017:27017
